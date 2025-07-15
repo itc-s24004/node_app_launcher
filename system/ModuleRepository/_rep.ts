@@ -15,9 +15,6 @@ export type rep = {
 
     GitHub_API_Client: typeof GitHub_API_Client;
 
-    /**パッケージをダウンロードします */
-    npm_install: (dir: string) => Promise<{code: number | null, signal: NodeJS.Signals | null}>;
-    local_node: string;
 
     addExitCall: (callback: () => void) => void;
 }
