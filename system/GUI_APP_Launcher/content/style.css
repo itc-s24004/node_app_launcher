@@ -1,0 +1,170 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+    /* transition: all 0.5s; */
+}
+
+
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+.appWindow {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+
+    background-color: rgba(0, 0, 0, 0);
+
+    display: flex;
+    flex-direction: row;
+}
+.appWindow.window {
+    flex-direction: column;
+}
+
+
+
+.titleBar {
+    -webkit-app-region: drag;
+    
+    height: 100%;
+    width: 30px;
+
+    background-color: blue;
+
+}
+.titleBar.window {
+    height: 30px;
+    width: 100%;
+
+}
+
+
+
+.content {
+    flex: 1;
+    display: flex;
+
+    padding: 5px;
+    gap: 5px;
+
+    overflow-x: scroll;
+
+    background-color: white;
+
+    transition: background 1s;
+}
+.content.window {
+    display: grid;
+    gap: 35px 45px;
+
+    place-content: start center;
+
+    grid-template-columns: repeat(auto-fit, 60px);
+    grid-template-rows: repeat(auto-fit, 60px);
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+
+
+.app {
+
+    position: relative;
+
+
+    min-width: 60px;
+    min-height: 60px;
+
+    max-width: 60px;
+    max-height: 60px;
+
+    border-radius: 99px;
+
+    background-color: gray;
+
+
+    text-align: end;
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    cursor: pointer;
+}
+.app:hover {
+    .appName {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+}
+
+.appName {
+    text-align: center;
+
+    white-space: nowrap;
+
+    user-select: none;
+
+    overflow: hidden;
+
+    font-size: 0.75em;
+    font-weight: 900;
+
+    max-height: calc(3em / 2);
+
+    /* デフォルトで非表示 */
+    display: none;
+
+    transition: all 0.3s;
+
+    background-color: rgba(0, 0, 0, 0.1);
+    color: white;
+
+    border-radius: 5px;
+
+}
+.appName.window {
+    display: block;
+
+    white-space: wrap;
+    line-break: normal;
+
+    overflow-y: scroll;
+
+    font-size: 0.80em;
+
+    position: relative;
+    bottom: -25px;
+    right: 20px;
+    width: calc(100% + 20px * 2);
+    max-height: 3em;
+}
+
+
+
+.bubble {
+    display: block;
+    position: absolute;
+
+
+    top: 0;
+    right: 0;
+
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+
+    background-color: red;
+
+    
+    
+
+    direction: rtl;
+}
