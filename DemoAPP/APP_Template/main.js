@@ -11,6 +11,8 @@ const icon = path.join(__dirname, "icon.png");
  * @param {import("../../system/ModuleRepository/main").ModuleReposiory} REP 
  */
 exports.run = async (REP) => {
+    //外部からの二度目の呼び出しを防止
+    exports.run = null;
     //必要なクラス・関数など取得▼
     const createWindow = REP.get("createWindow");
     const GUI_APP_Launcher = REP.get("GUI_APP_Launcher");

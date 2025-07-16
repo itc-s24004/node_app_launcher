@@ -1,7 +1,7 @@
 const { Octokit } = require("octokit");
 const { GitHub_API_Client } = require("./main");
 
-const client = new Octokit();
+// const client = new Octokit();
 
 
 const owner = "IT-College-Okinawa"; // 所有者(ユーザー/組織)

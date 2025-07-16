@@ -1,4 +1,4 @@
-const { npm_install } = require("./NodeAPP/_node_npm/main");
+const { npm_install } = require("./system/LocalNode/main");
 const path = require("path");
 
 //ModuleRepositoryの補完ファイル生成

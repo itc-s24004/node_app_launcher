@@ -1,1 +1,1 @@
-export type rep_plugin = import("../../NodeAPP/VOSK_Wrapper/_rep.ts").rep & import("../../NodeAPP/_node_npm/_rep.ts").rep;
+export type rep_plugin = import("../../NodeAPP/VOSK_Wrapper/_rep.ts").rep & import("../LocalNode/_rep.ts").rep;

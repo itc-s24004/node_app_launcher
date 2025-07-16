@@ -9,6 +9,8 @@ export type rep = {
 
     /**プリロード・カスタムスクリプトを含むBrowserWindowを作成します */
     createWindow: (option: BrowserWindowConstructorOptions, securePreload?: boolean) => BrowserWindow;
+    /**createWindowで使用されるプリロードスクリプトのパス */
+    defoult_preload: string;
 
     GUI_APP_Launcher: typeof GUI_APP_Launcher;
     

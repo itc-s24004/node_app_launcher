@@ -20,12 +20,3 @@ const modules = {
 
 
 contextBridge.exposeInMainWorld("electron", modules);
-
-
-const script = document.createElement("script");
-script.src = `file://${process.env.ipc_clientPath}`;
-
-
-window.addEventListener("DOMContentLoaded", () => {
-    document.head.append(script);
-});

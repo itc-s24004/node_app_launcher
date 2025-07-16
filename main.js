@@ -12,6 +12,9 @@ const { GitHub_API_Client } = require("./system/GitHubAPI/main");
     const { createWindow } = require("./system/Electron/main");
     const { GUI_APP_Launcher, addExitCall } = require("./system/GUI_APP_Launcher/main");
 
+    //cssテンプレ▼
+    require("./system/css_template/main");
+
     const rep = new ModuleReposiory();
     rep.register("ModuleReposiory", ModuleReposiory);
 
@@ -19,6 +22,8 @@ const { GitHub_API_Client } = require("./system/GitHubAPI/main");
     rep.register("GUI_APP_Launcher", GUI_APP_Launcher);
     rep.register("GitHub_API_Client", GitHub_API_Client);
     rep.register("addExitCall", addExitCall);
+    rep.register("defoult_preload", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
+
 
 
     //デフォルトアプリ▼
@@ -42,8 +47,8 @@ function loadAPP(rootDir, ...arg) {
         try {
             require(app).run(...arg);
         } catch (e) {
-            console.log(e)
             console.error(`プラグインエラー: ${app}`);
+            console.log(e)
         }
     });
 }
