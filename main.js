@@ -3,6 +3,7 @@ const { app } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { GitHub_API_Client } = require("./system/GitHubAPI/main");
+const { NodeManager } = require("./system/LocalNode/main");
 
 
 ( async () => {
@@ -21,6 +22,7 @@ const { GitHub_API_Client } = require("./system/GitHubAPI/main");
     rep.register("createWindow", createWindow);
     rep.register("GUI_APP_Launcher", GUI_APP_Launcher);
     rep.register("GitHub_API_Client", GitHub_API_Client);
+    rep.register("NodeManager", NodeManager);
     rep.register("addExitCall", addExitCall);
     rep.register("defoult_preload", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
 

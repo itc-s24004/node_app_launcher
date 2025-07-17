@@ -19,6 +19,10 @@ class GUI_APP_Launcher {
     //     return this.#launcher; 
     // }
 
+    static exitAPP() {
+        this.#launcher.close();
+    }
+
     /**全てのアプリボタン @type {GUI_APP_Launcher[]} */
     static #apps = [];
 

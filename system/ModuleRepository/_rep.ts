@@ -3,6 +3,7 @@ import { GitHub_API_Client } from "../GitHubAPI/main";
 import { createWindow } from "../Electron/main";
 import { ModuleReposiory } from "./main";
 import { GUI_APP_Launcher } from "../GUI_APP_Launcher/main";
+import { NodeManager } from "../LocalNode/main";
 
 export type rep = {
     ModuleRepository: typeof ModuleReposiory;
@@ -16,6 +17,9 @@ export type rep = {
     
 
     GitHub_API_Client: typeof GitHub_API_Client;
+
+
+    NodeManager: typeof NodeManager
 
 
     addExitCall: (callback: () => void) => void;
