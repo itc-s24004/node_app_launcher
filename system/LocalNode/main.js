@@ -155,7 +155,7 @@ class NodeManager {
     }
 
     npm_install(dir) {
-        return this.npm(dir, "i");
+        return this.npm(dir, ["i"], (ms) => console.log(ms));
     }
 }
 
