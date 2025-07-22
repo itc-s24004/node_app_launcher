@@ -122,5 +122,11 @@ window.addEventListener("load", () => {
 
 
 
-    })
+    });
+
+
+    
+    document.body.addEventListener("keydown", (ev) => {
+        if (ev.code == "KeyQ" && ev.ctrlKey) window.close();
+    });
 });

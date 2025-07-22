@@ -10,7 +10,7 @@ const { NodeManager } = require("./system/LocalNode/main");
     await app.whenReady();
 
     const { ModuleReposiory } = require("./system/ModuleRepository/main");
-    const { createWindow } = require("./system/Electron/main");
+    const { createWindow, createWebContentsView } = require("./system/Electron/main");
     const { GUI_APP_Launcher, addExitCall } = require("./system/GUI_APP_Launcher/main");
 
     //cssテンプレ▼
@@ -20,11 +20,13 @@ const { NodeManager } = require("./system/LocalNode/main");
     rep.register("ModuleReposiory", ModuleReposiory);
 
     rep.register("createWindow", createWindow);
+    rep.register("createWebContentsView", createWebContentsView);
     rep.register("GUI_APP_Launcher", GUI_APP_Launcher);
     rep.register("GitHub_API_Client", GitHub_API_Client);
     rep.register("NodeManager", NodeManager);
     rep.register("addExitCall", addExitCall);
-    rep.register("defoult_preload", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
+    rep.register("preload_origin", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
+    rep.register("ipc_client", path.join(__dirname, "system/Electron/customScripts/ipc_client.js"));
 
 
 

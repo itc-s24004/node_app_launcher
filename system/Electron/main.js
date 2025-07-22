@@ -1,7 +1,7 @@
 //Electron初期化前に呼ばれてもいいもののみ記述▼
 
 
-const { BrowserWindow, ipcMain } = require("electron");
+const { BrowserWindow, ipcMain, WebContentsView } = require("electron");
 const path = require("path");
 
 
@@ -14,6 +14,7 @@ const ipc_clientPath = path.join(__dirname, "customScripts/ipc_client.js");
 process.env.ipc_clientPath = ipc_clientPath;
 
 require("./API/dialog");
+require("./API/ipc")
 
 
 /**
@@ -27,7 +28,6 @@ function createWindow(options, securePreload=true) {
         return options;
     })();
     option.webPreferences = {preload: securePreload ? preloadSecurePath : preloadPath}
-    option.webPreferences.webSecurity = true;
     const window = new BrowserWindow(option);
     window.setMenu(null);
 
@@ -37,6 +37,24 @@ function createWindow(options, securePreload=true) {
 }
 
 exports.createWindow = createWindow;
+
+
+/**
+ * 
+ * @param {import("electron").WebContentsViewConstructorOptions} options 
+ */
+function createWebContentsView(options, securePreload=true) {
+    const option = (() => {
+        if (typeof options != "object") return {}
+        if (Array.isArray(options)) return {}
+        return options;
+    })();
+    option.webPreferences = {preload: securePreload ? preloadSecurePath : preloadPath}
+    const view = new WebContentsView(option);
+    return view
+}
+
+exports.createWebContentsView = createWebContentsView;
 
 
 

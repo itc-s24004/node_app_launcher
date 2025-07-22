@@ -1,4 +1,4 @@
-import { BrowserWindow, BrowserWindowConstructorOptions } from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions, WebContentsView, WebContentsViewConstructorOptions } from "electron";
 import { GitHub_API_Client } from "../GitHubAPI/main";
 import { createWindow } from "../Electron/main";
 import { ModuleReposiory } from "./main";
@@ -10,8 +10,11 @@ export type rep = {
 
     /**プリロード・カスタムスクリプトを含むBrowserWindowを作成します */
     createWindow: (option: BrowserWindowConstructorOptions, securePreload?: boolean) => BrowserWindow;
+    /**プリロード・カスタムスクリプトを含むWebContentsViewを作成します */
+    createWebContentsView: (option: WebContentsViewConstructorOptions, securePreload?: boolean) => WebContentsView
     /**createWindowで使用されるプリロードスクリプトのパス */
-    defoult_preload: string;
+    preload_origin: string;
+    ipc_client: string;
 
     GUI_APP_Launcher: typeof GUI_APP_Launcher;
     
