@@ -5,9 +5,10 @@ const https = require("https");
 
 const tar = require("tar");
 const { EventEmitter } = require("stream");
+const { LCR } = require("../../main");
 
 
-const rootDir = path.resolve("LocalNode");
+const rootDir = path.join(LCR, "LocalNode");
 if (!fs.existsSync(rootDir)) fs.mkdirSync(rootDir);
 
 
@@ -155,7 +156,7 @@ class NodeManager {
     }
 
     npm_install(dir) {
-        return this.npm(dir, ["i"], (ms) => console.log(ms));
+        return this.npm(dir, ["i"]);
     }
 }
 

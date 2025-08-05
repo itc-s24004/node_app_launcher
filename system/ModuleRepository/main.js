@@ -24,6 +24,15 @@ class ModuleReposiory {
     }
 
     /**
+     * 登録済みか確認
+     * @template {keyof import("./_rep_plugin").rep_plugin} T
+     * @param {T} name 
+     */
+    has(name) {
+        return (name in this.#rep);
+    }
+
+    /**
      * 
      * @template {keyof import("./_rep").rep} T
      * 

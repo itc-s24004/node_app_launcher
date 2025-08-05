@@ -55,110 +55,6 @@ class GUI_APP_Launcher {
     }
 
 
-    static {
-
-        this.#launcher.addListener("closed", () => {
-            session.defaultSession.clearCache();
-            exitCalls.forEach(call => call());
-            process.exit();
-        })
-        //アプリアイコンのクリック
-        ipcMain.on("GUI_APP_Launcher-APP_Click", (ev, id, type) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("click", type);
-        });
-        //ファイル入力
-        ipcMain.on("GUI_APP_Launcher-InputFile", (ev, id, pathList) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("inputFile", pathList);
-            // console.log(pathList);
-        });
-        //データ入力(ファイル以外の文字など)
-        ipcMain.on("GUI_APP_Launcher-InputData", (ev, id, dataList) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("inputData", dataList);
-            // console.log(dataList);
-        });
-
-
-        this.#launcher.loadFile(path.join(__dirname, "content/index.html"));
-        this.#launcher.webContents.once("did-finish-load", () => {
-
-            this.background = `center / cover no-repeat url(${path.join(__dirname, "content/background.png")})`;
-
-            // let i = true;
-            // const background = setInterval(() => {
-            //     i = !i;
-            //     if (i) {
-            //         this.background = `center / cover no-repeat url(${path.join(__dirname, "content/background.png")})`;
-            //     } else {
-            //         this.background = `center / cover no-repeat url(${path.join(__dirname, "content/mizugaki.png")})`;
-            //     }
-            // }, 500);
-            // this.#launcher.once("closed", () => {
-            //     clearInterval(background);
-            // })
-
-
-
-            this.titleBarColor = "rgb(35, 35, 35)"
-
-            
-
-
-
-            let isWindowMode = true;
-            const switchMode = () => {
-                isWindowMode = !isWindowMode;
-
-                this.#send("GUI_APP_Launcher-SetWindowMode", isWindowMode ? "window" : "floathing");
-
-                const size = isWindowMode ? [896, 504] : [500, 70];
-
-                this.#launcher.setResizable(true);
-                this.#launcher.setSize(...size);
-                this.#launcher.setResizable(false);
-
-                this.#launcher.setAlwaysOnTop(!isWindowMode);
-
-            }
-
-
-            const app = new GUI_APP_Launcher();
-            app.name = "デスクトップ";
-            app.icon = `rgb(109, 109, 109) url(${path.join(__dirname, "icons/mode_window.png")}) center / 70% no-repeat `;
-
-
-
-            // for (let index = 0; index < 100; index++) {
-            //     const app2 = new GUI_APP_Launcher();
-            //     app2.name = `アプリ: ${index}`;
-            //     app2.icon = `rgb(109, 109, 109) url(${path.join(__dirname, "icons/mode_window.png")}) center / 70% no-repeat `;
-            //     app2.on("click", (type) => {
-            //         if (type == "double") console.log(`アプリ: ${index} - 起動`);
-            //     });
-            // }
-
-            switchMode();
-            app.on("click", switchMode);
-
-            
-
-            app.on("inputFile", (filePathList) => {
-                console.log(filePathList);
-            });
-
-
-
-            this.#ready = true;
-            this.#leadyCalls.forEach(c => c());
-            this.#launcher.webContents.openDevTools({mode: "detach"});
-
-
-        });
-    }
-
-
     /**@type {(() => void)[]} */
     static #leadyCalls = [];
 
@@ -177,6 +73,7 @@ class GUI_APP_Launcher {
             this.#leadyCalls.push(() => {res()});
         });
     }
+
 
 
     /**
@@ -206,6 +103,77 @@ class GUI_APP_Launcher {
      */
     static #addAPP(id) {
         this.#send("GUI_APP_Launcher-AddAPP", id);
+    }
+
+
+
+
+    static {
+
+        this.#launcher.addListener("closed", () => {
+            session.defaultSession.clearCache();
+            exitCalls.forEach(call => call());
+            process.exit();
+        })
+        //アプリアイコンのクリック
+        ipcMain.on("GUI_APP_Launcher-APP_Click", (ev, id, type) => {
+            const APP = this.#apps.find(app => app.#id == id);
+            if (APP) APP.#emit("click", type);
+        });
+        //ファイル入力
+        ipcMain.on("GUI_APP_Launcher-InputFile", (ev, id, pathList) => {
+            const APP = this.#apps.find(app => app.#id == id);
+            if (APP) APP.#emit("inputFile", pathList);
+            // console.log(pathList);
+        });
+        //データ入力(ファイル以外の文字など)
+        ipcMain.on("GUI_APP_Launcher-InputData", (ev, id, dataList) => {
+            const APP = this.#apps.find(app => app.#id == id);
+            if (APP) APP.#emit("inputData", dataList);
+            // console.log(dataList);
+        });
+
+
+        this.#launcher.loadFile(path.join(__dirname, "content/index.html"));
+        this.#launcher.webContents.once("did-finish-load", () => {
+            this.#ready = true;
+            this.#leadyCalls.forEach(c => c());
+
+        });
+
+
+
+        GUI_APP_Launcher.whenReady().then(() => {
+            this.background = `center / cover no-repeat url(${path.join(__dirname, "content/background.png")})`;
+            this.titleBarColor = "rgb(35, 35, 35)";
+
+
+
+
+
+            const mode_sitch = new GUI_APP_Launcher();
+            mode_sitch.name = "デスクトップ";
+            mode_sitch.icon = `rgb(109, 109, 109) url(${path.join(__dirname, "icons/mode_window.png")}) center / 70% no-repeat `;
+
+            let isWindowMode = true;
+            const switchMode = () => {
+                isWindowMode = !isWindowMode;
+
+                this.#send("GUI_APP_Launcher-SetWindowMode", isWindowMode ? "window" : "floathing");
+
+                const size = isWindowMode ? [896, 504] : [500, 70];
+
+                this.#launcher.setResizable(true);
+                this.#launcher.setSize(...size);
+                this.#launcher.setResizable(false);
+
+                this.#launcher.setAlwaysOnTop(!isWindowMode);
+            }
+            switchMode();
+            mode_sitch.on("click", switchMode);
+
+        });
+
     }
 
 
@@ -312,3 +280,7 @@ class GUI_APP_Launcher {
 
 
 exports.GUI_APP_Launcher = GUI_APP_Launcher;
+
+
+
+require("./button_power");

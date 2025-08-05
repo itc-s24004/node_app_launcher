@@ -2,8 +2,32 @@ const { app } = require("electron");
 
 const path = require("path");
 const fs = require("fs");
+
+
+
+
+const LCR = path.resolve("local");
+console.log(LCR);
+if (!fs.existsSync(LCR)) fs.mkdirSync(LCR, {recursive: true});
+exports.LCR = LCR;
+
+
+
+
 const { GitHub_API_Client } = require("./system/GitHubAPI/main");
 const { NodeManager } = require("./system/LocalNode/main");
+const { JsonConfig } = require("./system/JsonConfig/main");
+
+
+
+
+
+
+
+
+
+
+
 
 
 ( async () => {
@@ -21,12 +45,20 @@ const { NodeManager } = require("./system/LocalNode/main");
 
     rep.register("createWindow", createWindow);
     rep.register("createWebContentsView", createWebContentsView);
+
+
+    //createWindowなどで使われているファイルのパス▼
+    rep.register("preload_origin", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
+    rep.register("ipc_client", path.join(__dirname, "system/Electron/customScripts/ipc_client.js"));
+    //ローカルに保存する際のルートディレクトリ▼
+    rep.register("LOCAL_CONTENT_ROOT", LCR);
+
+    
+    rep.register("JsonConfig", JsonConfig);
     rep.register("GUI_APP_Launcher", GUI_APP_Launcher);
     rep.register("GitHub_API_Client", GitHub_API_Client);
     rep.register("NodeManager", NodeManager);
     rep.register("addExitCall", addExitCall);
-    rep.register("preload_origin", path.join(__dirname, "system/Electron/preload/preload_origin.js"));
-    rep.register("ipc_client", path.join(__dirname, "system/Electron/customScripts/ipc_client.js"));
 
 
 
