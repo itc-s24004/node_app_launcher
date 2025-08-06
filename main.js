@@ -26,7 +26,7 @@ const { JsonConfig } = require("./system/JsonConfig/main");
 
 
 
-
+if (!app) return;
 
 
 
