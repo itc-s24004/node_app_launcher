@@ -82,14 +82,14 @@ class GUI_APP_Launcher {
      * @param  {...any} args 
      */
     static #send(event, ...args) {
-        this.#launcher.webContents.send(event, ...args);
+        this.#launcher?.webContents.send(event, ...args);
     }
 
 
     /**
      * 
      * @param {string} id 
-     * @param {"icon" | "name" | "enable" | "visibility"} type 
+     * @param {"icon" | "bubble" | "name" | "enable" | "visibility"} type
      * @param {string | boolean} value 
      */
     static #update(id, type, value) {
@@ -111,6 +111,7 @@ class GUI_APP_Launcher {
     static {
 
         this.#launcher.addListener("closed", () => {
+            this.#launcher = null;
             session.defaultSession.clearCache();
             exitCalls.forEach(call => call());
             process.exit();
@@ -213,7 +214,16 @@ class GUI_APP_Launcher {
         GUI_APP_Launcher.#update(this.#id, "icon", value);
     }
 
-    #bubble
+    #bubble = "red";
+    get bubble() {
+        return this.#bubble;
+    }
+
+    set bubble(value) {
+        if (typeof value != "string") return;
+        this.#bubble = value;
+        GUI_APP_Launcher.#update(this.#id, "bubble", value);
+    }
 
 
     #eventPipe = new EventEmitter();
