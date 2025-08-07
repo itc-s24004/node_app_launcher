@@ -51,6 +51,7 @@ class JsonConfig {
         const [isArray1, isArray2] = [json, json2].map(Array.isArray);
 
         if (type1 != type2 || isArray1 != isArray2) return false;
+        if (isArray1) return true;
 
         if (type1 == "object") {
             let result = true;
