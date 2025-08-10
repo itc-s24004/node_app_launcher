@@ -6,15 +6,21 @@ const fs = require("fs");
 
 
 
-const LCR = path.resolve("local");
-console.log(LCR);
+const LCR = (() => {
+    try {
+        return path.join(app.getAppPath(), "local");
+    } catch {
+        return path.join(__dirname, "local");
+    }
+})();
+
 if (!fs.existsSync(LCR)) fs.mkdirSync(LCR, {recursive: true});
 exports.LCR = LCR;
 
 
 
 
-const { GitHub_API_Client } = require("./system/GitHubAPI/main");
+// const { GitHub_API_Client } = require("./system/GitHubAPI/main");
 const { NodeManager } = require("./system/LocalNode/main");
 const { JsonConfig } = require("./system/JsonConfig/main");
 
@@ -31,7 +37,12 @@ if (!app) return;
 
 
 ( async () => {
+    
     await app.whenReady();
+
+    console.log("================")
+    console.log(LCR);
+    console.log("================")
 
     const { ModuleReposiory } = require("./system/ModuleRepository/main");
     const { createWindow, createWebContentsView } = require("./system/Electron/main");
@@ -56,7 +67,7 @@ if (!app) return;
     
     rep.register("JsonConfig", JsonConfig);
     rep.register("GUI_APP_Launcher", GUI_APP_Launcher);
-    rep.register("GitHub_API_Client", GitHub_API_Client);
+    // rep.register("GitHub_API_Client", GitHub_API_Client);
     rep.register("NodeManager", NodeManager);
     rep.register("addExitCall", addExitCall);
 
