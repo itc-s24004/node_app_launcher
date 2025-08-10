@@ -151,16 +151,25 @@ class GUI_APP_Launcher {
 
 
 
+            //終了ボタン▼
+            const power = new GUI_APP_Launcher();
+            power.name = "終了";
+            power.icon = `rgb(109, 109, 109) url(${path.join(__dirname, "icons/power.png")}) center / 70% no-repeat `;
+            power.on("click", (type) => {
+                if (type == "double") GUI_APP_Launcher.exitAPP();
+            });
 
+
+            //表示モード切り替え▼
             const mode_sitch = new GUI_APP_Launcher();
-            mode_sitch.name = "デスクトップ";
-            mode_sitch.icon = `rgb(109, 109, 109) url(${path.join(__dirname, "icons/mode_window.png")}) center / 70% no-repeat `;
+            mode_sitch.name = "表示切り替え";
 
             let isWindowMode = true;
             const switchMode = () => {
                 isWindowMode = !isWindowMode;
 
                 this.#send("GUI_APP_Launcher-SetWindowMode", isWindowMode ? "window" : "floathing");
+                mode_sitch.icon = `rgb(109, 109, 109) url(${path.join(__dirname, `icons/mode_${isWindowMode ? "floating" : "window"}.png`)}) center / 70% no-repeat `;
 
                 const size = isWindowMode ? [896, 504] : [500, 70];
 
@@ -293,4 +302,4 @@ exports.GUI_APP_Launcher = GUI_APP_Launcher;
 
 
 
-require("./button_power");
+// require("./button_power");
