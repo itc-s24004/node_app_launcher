@@ -1,1 +1,0 @@
-export type rep_plugin = import("../../NodeAPP/SimpleTextEditor/_rep.ts").rep & import("../../NodeAPP/VOSK_Wrapper/_rep.ts").rep;
