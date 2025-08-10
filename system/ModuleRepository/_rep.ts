@@ -23,7 +23,7 @@ export type rep = {
     GUI_APP_Launcher: typeof GUI_APP_Launcher;
     
 
-    GitHub_API_Client: typeof GitHub_API_Client;
+    // GitHub_API_Client: typeof GitHub_API_Client;
 
 
     NodeManager: typeof NodeManager
