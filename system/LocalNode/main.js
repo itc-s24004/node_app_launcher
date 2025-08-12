@@ -134,9 +134,14 @@ class NodeManager {
         return this.#node;
     }
     #npm
-    constructor(binaryRootPath) {
-        this.#node = path.join(binaryRootPath, "bin/node");
-        this.#npm = path.join(binaryRootPath, "bin/npm");
+
+    #binaryRoot
+    #packageRoot
+    constructor(packageRoot) {
+        this.#packageRoot = packageRoot;
+        this.#binaryRoot = path.join(packageRoot, "bin");
+        this.#node = path.join(this.#binaryRoot, "node");
+        this.#npm = path.join(this.#binaryRoot, "npm");
     }
 
     /**
@@ -146,9 +151,22 @@ class NodeManager {
      * @returns {Promise.<{code: number | null, signal: NodeJS.Signals | null}>}
      */
     npm(cwd, args, callback) {
+
+        //環境変数を一部上書き▼
+        /**@type {{[x:string]: string}} */
+        const e = JSON.parse(JSON.stringify(process.env));
+        e["_"] = this.#node;
+        e["NVM_BIN"] = this.#binaryRoot;
+        e["NVM_INC"] = path.join(this.#packageRoot, "include/node")
+        //nodeとnpmを追加準備したものに置き換え▼
+        const nep = e["PATH"].split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
+        nep.push(this.#node);
+        nep.push(this.#npm);
+        e["PATH"] = nep.join(":");
+
         if (typeof callback != "function") callback = () => {};
         return new Promise((res, rej) => {
-            child.execFile(this.#node, [this.#npm, ...args], {cwd}).once("exit", (code, signal) => {
+            child.execFile(this.#node, [this.#npm, ...args], {cwd, env: e}).once("exit", (code, signal) => {
                 res({code, signal});
                 
             }).stdout.on("data", callback)
