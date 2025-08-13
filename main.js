@@ -4,18 +4,30 @@ const path = require("path");
 const fs = require("fs");
 
 
-
-
-const LCR = (() => {
+const APP_ROOT = (() => {
     try {
-        return path.join(app.getAppPath(), "local");
+        //ビルド後
+        const local = path.join(app.getPath("exe"), "../");
+        if (local == __dirname) return path.relative();
+        //ビルド前
+        return local
     } catch {
-        return path.join(__dirname, "local");
+        return __dirname;
     }
 })();
 
+
+
+
+
+const LCR = path.join(APP_ROOT, "local");
 if (!fs.existsSync(LCR)) fs.mkdirSync(LCR, {recursive: true});
 exports.LCR = LCR;
+
+
+
+// const APP_ROOT = path.join(APP_LCR, "NodeAPP");
+// if (!fs.existsSync(APP_ROOT)) fs.mkdirSync(APP_ROOT, {recursive: true});
 
 
 
@@ -78,7 +90,8 @@ if (!app) return;
     loadAPP(PRE_APP_Root, rep);
 
     //カスタムアプリ▼
-    const APP_Root = path.resolve("NodeAPP");
+    const APP_Root = path.join(APP_ROOT, "NodeAPP");
+    if (!fs.existsSync(APP_Root)) fs.mkdirSync(APP_Root, {recursive: true});
     if (APP_Root != PRE_APP_Root) loadAPP(APP_Root, rep);
 
 })();

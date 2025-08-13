@@ -134,14 +134,43 @@ class NodeManager {
         return this.#node;
     }
     #npm
+    get _npm() {
+        return this.#npm
+    }
 
     #binaryRoot
     #packageRoot
+    #env
+    get env() {
+        return JSON.parse(JSON.stringify(this.#env));
+    }
     constructor(packageRoot) {
         this.#packageRoot = packageRoot;
         this.#binaryRoot = path.join(packageRoot, "bin");
         this.#node = path.join(this.#binaryRoot, "node");
         this.#npm = path.join(this.#binaryRoot, "npm");
+
+
+        //環境変数を一部上書き▼
+        /**@type {{[x:string]: string}} */
+        const e = JSON.parse(JSON.stringify(process.env));
+        e["_"] = this.#node;
+        e["NVM_BIN"] = this.#binaryRoot;
+        e["NVM_INC"] = path.join(this.#packageRoot, "include/node")
+
+        e["npm_config_node_gyp"] = path.join(this.#packageRoot, "lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js")
+        //nodeとnpmを追加準備したものに置き換え▼
+        const nep = e["PATH"].split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
+        nep.push(this.#node, this.#npm);
+        e["PATH"] = nep.join(":");
+
+
+        e["NODE"] = this.#node;
+        e["npm_config_global_prefix"] = this.#packageRoot;
+
+        // console.log(e)
+
+        this.#env = e;
     }
 
     /**
@@ -152,21 +181,10 @@ class NodeManager {
      */
     npm(cwd, args, callback) {
 
-        //環境変数を一部上書き▼
-        /**@type {{[x:string]: string}} */
-        const e = JSON.parse(JSON.stringify(process.env));
-        e["_"] = this.#node;
-        e["NVM_BIN"] = this.#binaryRoot;
-        e["NVM_INC"] = path.join(this.#packageRoot, "include/node")
-        //nodeとnpmを追加準備したものに置き換え▼
-        const nep = e["PATH"].split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
-        nep.push(this.#node);
-        nep.push(this.#npm);
-        e["PATH"] = nep.join(":");
 
         if (typeof callback != "function") callback = () => {};
         return new Promise((res, rej) => {
-            child.execFile(this.#node, [this.#npm, ...args], {cwd, env: e}).once("exit", (code, signal) => {
+            child.execFile(this.#node, [this.#npm, ...args], {cwd, env: this.#env}).once("exit", (code, signal) => {
                 res({code, signal});
                 
             }).stdout.on("data", callback)
