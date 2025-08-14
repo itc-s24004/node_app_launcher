@@ -36,17 +36,22 @@ exports.run = async (REP) => {
         //ダブルクリックではないなら戻る
         if (type == "single") return;
 
-        if (contentWindow && contentWindow.isEnabled()) {
+        if (contentWindow) {
             //コンテンツウィンドウがあるならフォーカスして最前面に
             window.focus();
         } else {
-            //有効なコンテンツウィンドウがないなら作成
+            //コンテンツウィンドウがないなら作成
             contentWindow = createWindow();
             //コンテンツを読み込み
             contentWindow.loadFile(content);
+            //バブルを赤に変更
+            appButton.bubble = "red";
+
             //ウィンドウが閉じたとき
             contentWindow.once("closed", () => {
                 contentWindow = null;
+                //バブルを透明に変更
+                appButton.bubble = "rgba(0, 0, 0, 0)";
             });
         }
     });
