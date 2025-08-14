@@ -1,3 +1,7 @@
+// console.log(process.env);
+// console.log(process.argv);
+
+
 const { app } = require("electron");
 
 const path = require("path");
@@ -6,11 +10,7 @@ const fs = require("fs");
 
 const APP_ROOT = (() => {
     try {
-        //ビルド後
-        const local = path.join(app.getPath("exe"), "../");
-        if (local == __dirname) return path.relative();
-        //ビルド前
-        return local
+        return app.isPackaged ? path.join(app.getPath("home"), ".node_launcher") : path.resolve();
     } catch {
         return __dirname;
     }
