@@ -154,18 +154,19 @@ class NodeManager {
         //環境変数を一部上書き▼
         /**@type {{[x:string]: string}} */
         const e = JSON.parse(JSON.stringify(process.env));
-        e["_"] = this.#node;
         e["NVM_BIN"] = this.#binaryRoot;
         e["NVM_INC"] = path.join(this.#packageRoot, "include/node")
 
-        e["npm_config_node_gyp"] = path.join(this.#packageRoot, "lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js")
+        // e["npm_config_node_gyp"] = path.join(this.#packageRoot, "lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js")
         //nodeとnpmを追加準備したものに置き換え▼
         const nep = e["PATH"].split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
-        nep.push(this.#node, this.#npm);
+        nep.push(this.#binaryRoot, path.join(this.#packageRoot, "lib/node_modules/npm/bin"));
         e["PATH"] = nep.join(":");
 
 
         e["NODE"] = this.#node;
+        e["npm_config_globalconfig"] = path.join(this.#packageRoot, "etc/npmrc");
+        e["npm_execpath"] = path.join(this.#binaryRoot, "npm-cli.js");
         e["npm_config_global_prefix"] = this.#packageRoot;
 
         // console.log(e)
