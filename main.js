@@ -87,7 +87,7 @@ if (!app) return;
 
     //デフォルトアプリ▼
     const PRE_APP_Root = path.join(__dirname, "NodeAPP");
-    loadAPP(PRE_APP_Root, rep);
+    if (fs.existsSync(PRE_APP_Root)) loadAPP(PRE_APP_Root, rep);
 
     //カスタムアプリ▼
     const APP_Root = path.join(APP_ROOT, "NodeAPP");
