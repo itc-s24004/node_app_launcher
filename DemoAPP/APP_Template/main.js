@@ -51,7 +51,7 @@ exports.run = async (REP) => {
             contentWindow.once("closed", () => {
                 contentWindow = null;
                 //バブルを透明に変更
-                appButton.bubble = "rgba(0, 0, 0, 0)";
+                appButton.bubble = "transparent";
             });
         }
     });
