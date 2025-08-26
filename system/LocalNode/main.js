@@ -2,10 +2,12 @@ const child = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
+const os = require("os");
 
 const tar = require("tar");
 const { EventEmitter } = require("stream");
 const { LCR } = require("../../main");
+const AdmZip = require("adm-zip");
 
 
 const rootDir = path.join(LCR, "LocalNode");
@@ -18,6 +20,14 @@ const packageDir = path.join(rootDir, "package");
 if (!fs.existsSync(packageDir)) fs.mkdirSync(packageDir);
 const nodeBinaryRoot = path.join(rootDir, "node");
 if (!fs.existsSync(nodeBinaryRoot)) fs.mkdirSync(nodeBinaryRoot);
+
+const osType = os.type();
+const isWindows = osType == "Windows_NT";
+const isMacOS = osType == "Darwin";
+const isLinux = osType == "Linux";
+
+const ext = isWindows ? "zip" : isMacOS ? "tar.gz" : "tar.xz";
+const file = isWindows ? "win-x64.zip" : isMacOS ? "darwin-x64.tar.gz" : "linux-x64.tar.xz"
 
 
 class NodeManager {
@@ -56,8 +66,8 @@ class NodeManager {
             const versions = (await this.getAllVersions()).map(v => v.version);
             if (!versions.includes(versionText)) return resolve(false);
 
-            https.get(`https://nodejs.org/dist/v${version}/node-v${version}-linux-x64.tar.gz`, {timeout: 1000*10}, (res) => {
-                const savePath = path.join(packageDir, `${version}.tgz`);
+            https.get(`https://nodejs.org/dist/v${version}/node-v${version}-${file}`, {timeout: 1000*10}, (res) => {
+                const savePath = path.join(packageDir, `${version}.${ext}`);
                 const stream = fs.createWriteStream(savePath);
                 res.pipe(stream);
                 stream.once("close", () => resolve(res.complete));
@@ -71,11 +81,20 @@ class NodeManager {
      * @returns {Promise.<boolean>}
      */
     static async #extract(version) {
-        const packagePath = path.join(packageDir, `${version}.tgz`);
+        const packagePath = path.join(packageDir, `${version}.${ext}`);
         const exPath = path.join(tmpDir, version);
         //展開▼
         if (!fs.existsSync(exPath)) fs.mkdirSync(exPath);
-        await tar.x({f: packagePath, cwd: exPath});
+        if (isWindows) {
+            await new Promise((res, rej) => {
+                new AdmZip(packagePath).extractAllToAsync(exPath, true, true, (err) => {
+                    if (err) throw err;
+                    res();
+                });
+            });
+        } else {
+            await tar.x({f: packagePath, cwd: exPath});
+        }
         //一覧に移動▼
         const exs = fs.readdirSync(exPath);
         if (!exs.length) return false;
@@ -146,9 +165,9 @@ class NodeManager {
     }
     constructor(packageRoot) {
         this.#packageRoot = packageRoot;
-        this.#binaryRoot = path.join(packageRoot, "bin");
-        this.#node = path.join(this.#binaryRoot, "node");
-        this.#npm = path.join(this.#binaryRoot, "npm");
+        this.#binaryRoot = isWindows ? packageRoot : path.join(packageRoot, "bin");
+        this.#node = path.join(this.#binaryRoot, isWindows ? "node.exe" : "node");
+        this.#npm = path.join(this.#binaryRoot, isWindows ? "node_modules/npm/bin/npm-cli.js" : "npm");
 
 
         //環境変数を一部上書き▼
@@ -159,7 +178,7 @@ class NodeManager {
 
         // e["npm_config_node_gyp"] = path.join(this.#packageRoot, "lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js")
         //nodeとnpmを追加準備したものに置き換え▼
-        const nep = e["PATH"].split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
+        const nep = (e["PATH"]??"").split(":").filter(e => !/.*node\/v?[0-9\.]+\/bin$/.test(e) && !/.*npm\/v?[0-9\.]+\/bin$/.test(e));
         nep.push(this.#binaryRoot, path.join(this.#packageRoot, "lib/node_modules/npm/bin"));
         e["PATH"] = nep.join(":");
 
