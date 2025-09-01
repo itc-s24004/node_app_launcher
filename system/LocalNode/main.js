@@ -27,7 +27,7 @@ const isMacOS = osType == "Darwin";
 const isLinux = osType == "Linux";
 
 const ext = isWindows ? "zip" : isMacOS ? "tar.gz" : "tar.xz";
-const file = isWindows ? "win-x64.zip" : isMacOS ? "darwin-x64.tar.gz" : "linux-x64.tar.xz"
+const file = isWindows ? "win-x64.zip" : isMacOS ? "darwin-x64.tar.gz" : "linux-x64.tar.gz"
 
 
 class NodeManager {
