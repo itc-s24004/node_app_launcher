@@ -1,7 +1,7 @@
 const { EventEmitter } = require("events");
 const { createWindow } = require("../Electron/main");
 const path = require("path");
-const { ipcMain, session } = require("electron");
+const { ipcMain, session, app } = require("electron");
 
 
 const exitCalls = [];
@@ -39,7 +39,7 @@ class GUI_APP_Launcher {
     static set background(value) {
         if (typeof value != "string") return;
         this.#background = value;
-        this.#send("GUI_APP_Launcher-SetBackground", value);
+        this.#send("background", value);
     }
 
     /**タイトルバーの色 @type {string} */
@@ -51,7 +51,7 @@ class GUI_APP_Launcher {
     static set titleBarColor(value) {
         if (typeof value != "string") return;
         this.#titleBarColor = value;
-        this.#send("GUI_APP_Launcher-SetTitleColor", value);
+        this.#send("titleColor", value);
     }
 
 
@@ -83,7 +83,7 @@ class GUI_APP_Launcher {
      */
     static #send(event, ...args) {
         //!!!t 取得時にエスケープとして誤認されるため変更済み 修正され次第こちらも修正▼
-        this.#launcher?.webContents.send(event, ...args.map(arg => typeof arg == "string" ? arg.replaceAll("\\", "\\\\") : arg));
+        this.#launcher?.webContents.send("GUI_APP_Launcher", event, ...args.map(arg => typeof arg == "string" ? arg.replaceAll("\\", "\\\\") : arg));
     }
 
 
@@ -94,7 +94,7 @@ class GUI_APP_Launcher {
      * @param {string | boolean} value 
      */
     static #update(id, type, value) {
-        this.#send("GUI_APP_Launcher-Update", id, type, value);
+        this.#send("update", id, type, value);
     }
 
 
@@ -103,7 +103,7 @@ class GUI_APP_Launcher {
      * @param {string} id 
      */
     static #addAPP(id) {
-        this.#send("GUI_APP_Launcher-AddAPP", id);
+        this.#send("addAPP", id);
     }
 
 
@@ -113,28 +113,43 @@ class GUI_APP_Launcher {
 
         this.#launcher.addListener("closed", () => {
             this.#launcher = null;
-            session.defaultSession.clearCache();
+            // session.defaultSession.clearCache();
             exitCalls.forEach(call => call());
+            app.quit();
             process.exit();
-        })
-        //アプリアイコンのクリック
-        ipcMain.on("GUI_APP_Launcher-APP_Click", (ev, id, type) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("click", type);
-        });
-        //ファイル入力
-        ipcMain.on("GUI_APP_Launcher-InputFile", (ev, id, pathList) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("inputFile", pathList);
-            // console.log(pathList);
-        });
-        //データ入力(ファイル以外の文字など)
-        ipcMain.on("GUI_APP_Launcher-InputData", (ev, id, dataList) => {
-            const APP = this.#apps.find(app => app.#id == id);
-            if (APP) APP.#emit("inputData", dataList);
-            // console.log(dataList);
         });
 
+
+        this.#launcher.webContents.openDevTools()
+        ipcMain.handle("GUI_APP_Launcher", async (ev, EventName, ...args) => {
+            if (this.#launcher.webContents != ev.sender) return;
+
+            switch (EventName) {
+                case "click": {
+                    const [id, type] = args;
+                    const APP = this.#apps.find(app => app.#id == id);
+                    if (APP) APP.#emit("click", type);
+                    break
+
+                }
+
+                case "inputFile": {
+                    const [id, pathList] = args;
+                    const APP = this.#apps.find(app => app.#id == id);
+                    if (APP) APP.#emit("inputFile", pathList);
+                    break
+
+                }
+
+                case "inputData": {
+                    const [id, dataList] = args;
+                    const APP = this.#apps.find(app => app.#id == id);
+                    if (APP) APP.#emit("inputData", dataList);
+                    break
+
+                }
+            }
+        });
 
         this.#launcher.loadFile(path.join(__dirname, "content/index.html"));
         this.#launcher.webContents.once("did-finish-load", () => {
@@ -169,7 +184,7 @@ class GUI_APP_Launcher {
             const switchMode = () => {
                 isWindowMode = !isWindowMode;
 
-                this.#send("GUI_APP_Launcher-SetWindowMode", isWindowMode ? "window" : "floathing");
+                this.#send("windowMode", isWindowMode ? "window" : "floathing");
                 mode_sitch.icon = `rgb(109, 109, 109) url(${path.join(__dirname, `icons/mode_${isWindowMode ? "floating" : "window"}.png`)}) center / 70% no-repeat `;
 
                 const size = isWindowMode ? [896, 504] : [500, 70];
