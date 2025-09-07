@@ -84,12 +84,8 @@ class GitHub_API_Client {
 
 
 
-
-
-
-
-    async getBranchList(owner, repo) {
-        const res = await client.request(`GET /repos/${owner}/${repo}/branches`, {
+    async getReleases(owner, repo) {
+        const res = await this.#client.request(`GET /repos/${owner}/${repo}/releases`, {
             owner: 'OWNER',
             repo: 'REPO',
             headers: {
@@ -133,7 +129,7 @@ class GitHub_API_Client {
         }).catch(() => undefined);
         if (res && res.status == 200) return res.data;
     }
-    
+
 }
 
 
