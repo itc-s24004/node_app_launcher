@@ -82,7 +82,7 @@ class GUI_APP_Launcher {
      * @param  {...any} args 
      */
     static #send(event, ...args) {
-        //!!!t 取得時にエスケープとして誤認されるため変更済み 修正され次第こちらも修正▼
+        //!!!t バックスラッシュが取得時にエスケープとして誤認されるため変更済み 修正され次第こちらも修正▼
         this.#launcher?.webContents.send("GUI_APP_Launcher", event, ...args.map(arg => typeof arg == "string" ? arg.replaceAll("\\", "\\\\") : arg));
     }
 
