@@ -18,33 +18,19 @@ const APP_ROOT = (() => {
 
 
 
-
-
 const LCR = path.join(APP_ROOT, "local");
 if (!fs.existsSync(LCR)) fs.mkdirSync(LCR, {recursive: true});
 exports.LCR = LCR;
 
 
 
-// const APP_ROOT = path.join(APP_LCR, "NodeAPP");
-// if (!fs.existsSync(APP_ROOT)) fs.mkdirSync(APP_ROOT, {recursive: true});
-
+if (!app) return;
 
 
 
 // const { GitHub_API_Client } = require("./system/GitHubAPI/main");
 const { NodeManager } = require("./system/LocalNode/main");
 const { JsonConfig } = require("./system/JsonConfig/main");
-
-
-
-
-
-
-
-
-
-if (!app) return;
 
 
 
